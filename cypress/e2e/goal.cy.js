@@ -245,6 +245,10 @@ describe('Testing Staff page in staff account', () =>{
                 expect(UpdatedText).not.to.equal(initialText)
             })
 
+
+            // validate that the row's email is as typed in search
+            cy.get('tr#staff_script_user_temp_2 td').eq(3).should('have.text', STAFF_EMAIL);
+
             // also make sure that the table has only 1 value now
             cy.get('tbody')
             .find('tr')
@@ -309,6 +313,10 @@ describe('Testing Staff page in staff account', () =>{
             .type(staff_firstname)
             // hitting enter key
             .type('{enter}');
+
+
+            // validate that the row's firstname is "test_user_temp_1" as typed in search
+            cy.get('tr#staff_test_user_temp_1 td').eq(1).should('have.text', staff_firstname);
         
             let UpdatedText
             cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
@@ -328,11 +336,11 @@ describe('Testing Staff page in staff account', () =>{
                 initialText = text.trim()
             })
 
-            let staff_firstname = "QA"
+            let staff_lasttname = "QA"
             cy.get('input[type="search"][aria-controls="staffs"]')
             // making sure it has no previous value
             .clear()
-            .type(staff_firstname)
+            .type(staff_lasttname)
             // hitting enter key
             .type('{enter}');
         
@@ -341,6 +349,9 @@ describe('Testing Staff page in staff account', () =>{
                 UpdatedText = text.trim()
                 expect(UpdatedText).not.to.equal(initialText)
             })
+
+            // validate that the row's lastname is "QA" is typed in search
+            cy.get('tr#staff_YazanHamdanUser1 td').eq(2).should('have.text', staff_lasttname);
 
             // also make sure that the table has only 1 value now
             cy.get('tbody')
