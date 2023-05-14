@@ -1,4 +1,4 @@
-describe('Testing Staff page in staff account senario', () =>{
+describe('Testing Staff page in staff account', () =>{
 
     // read cypress.env variables
     const STAFF_USERNAME = Cypress.env('STAFF_USERNAME')
@@ -50,322 +50,331 @@ describe('Testing Staff page in staff account senario', () =>{
         // clicking log out button
         cy.get('a.dropdown-item[href="/accounts/logout/"]').click()
       })
-      
-    // Test case 1: adding a staff with an empty name (should pass)
-    it('Add staff with empty name', () => { // change the test case name
-        // Store the text content of the staffs info div before clicking the button
-        let initialText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-        initialText = text.trim()
+
+    
+    context('Adding staff scenario', () => {
+
+        // Test case 1: adding a staff with an empty name (should pass)
+        it('Add staff with empty name (should pass)', () => { // change the test case name
+            // Store the text content of the staffs info div before clicking the button
+            let initialText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
+
+            // Get the initial number of rows in the table
+            let initialRowCount
+            cy.get('tbody tr').then((rows) => {
+                initialRowCount = rows.length
+            })
+
+            // Click the <button> element
+            cy.get('button.btn.btn-primary[onclick="addStaff()"]').click()
+
+            // Check that the text content of the <div> element is still the same as before
+            cy.get('div.dataTables_info#staffs_info').invoke('text').should((text) => {
+                expect(text.trim()).to.equal(initialText)
+            })
+
+            // Get the final number of rows in the table
+            let finalRowCount
+            cy.get('tbody tr').then((rows) => {
+                finalRowCount = rows.length
+            })
+
+            // Ensure that the number of rows in the table is the same before and after clicking the button
+            expect(finalRowCount).to.equal(initialRowCount)
         })
 
-        // Get the initial number of rows in the table
-        let initialRowCount
-        cy.get('tbody tr').then((rows) => {
-            initialRowCount = rows.length
-        })
+        // Test Case 2: adding a staff normally with a valid name
+        it('Add a staff normally (should pass)', () => {
+            // Store the text content of the <div> element before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').as('initialText')
 
-        // Click the <button> element
-        cy.get('button.btn.btn-primary[onclick="addStaff()"]').click()
-
-        // Check that the text content of the <div> element is still the same as before
-        cy.get('div.dataTables_info#staffs_info').invoke('text').should((text) => {
-            expect(text.trim()).to.equal(initialText)
-        })
-
-        // Get the final number of rows in the table
-        let finalRowCount
-        cy.get('tbody tr').then((rows) => {
-            finalRowCount = rows.length
-        })
-
-        // Ensure that the number of rows in the table is the same before and after clicking the button
-        expect(finalRowCount).to.equal(initialRowCount)
-    })
-
-    // Test Case 2: adding a staff normally with a valid name
-    it('Add a staff normally', () => {
-        // Store the text content of the <div> element before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').as('initialText')
-
-      
-        // Type "cypress staff user" in the input element
-        const inputText = 'cypress staff user'
-        cy.get('#new_staff')
-        // making sure it has no previous value
-          .clear()
-          .type(inputText)
-          .should('have.value', inputText)
-      
-        // Click the button
-        cy.get('button[onclick="addStaff()"]').click()
-      
-        // validating the lengtth of the table
-        cy.get('tbody tr').should('have.length.gt', 0)
-      
-        // Check that the text content of the staffs info element has NOT changed
-        cy.get('div.dataTables_info#staffs_info').invoke('text').should('not.equal', '@initialText')
-      })
-
-     // Test Case 3: adding an existing staff
-    // this test case Assumes that there is an existing staff with a name "cypress staff user"
-    it('add a staff that already exists', () => {
-        let initialText
-      
-        // Store the text content of the staffs info div before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-          initialText = text.trim()
-        })
-
-        // Get the initial number of rows in the table
-        let initialRowCount
-        cy.get('tbody tr').then((rows) => {
-            initialRowCount = rows.length
-        })
-      
-        // Type "cypress staff user" in the input element
-        const inputText = 'cypress staff user'
-        cy.get('#new_staff')
-        // making sure it has no previous value
-          .clear()
-          .type(inputText)
-          .should('have.value', inputText)
-      
-        // Click the button
-        cy.get('button[onclick="addStaff()"]').click()
-      
-        // validating the length of the table
-        cy.get('tbody tr').should('have.length.gt', 0)
-      
-        // Check that the text content of the staffs info element has NOT changed
-        let UpdatedText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-          UpdatedText = text.trim()
-          expect(UpdatedText).to.equal(initialText)
-        })
-
-        // Get the final number of rows in the table
-        let finalRowCount
-        cy.get('tbody tr').then((rows) => {
-            finalRowCount = rows.length
-        })
-
-        // Ensure that the number of rows in the table is the same before and after clicking the button
-        expect(finalRowCount).to.equal(initialRowCount)
-      }) 
-
-   // Test case 4: Searching for a user that exists
-   // This test case assumes there is a user called "cypress staff user" that exist 
-   it('searching for a user that exists', () => {
-        let initialText
-        // Store the text content of the staffs info div before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-        initialText = text.trim()
-        })
-
-
-        const inputText = 'cypress staff user';
-        // Type the input text in the search bar and press Enter
-        cy.get('input[type="search"][aria-controls="staffs"]')
-        // making sure it has no previous value
-        .clear()
-        .type(inputText)
-        // hitting enter key
-        .type('{enter}');
+            // Type "cypress staff user" in the input element
+            const inputText = 'cypress staff user'
+            cy.get('#new_staff')
+            // making sure it has no previous value
+            .clear()
+            .type(inputText)
+            .should('have.value', inputText)
         
-
-        // Check that the text content of the staffs info element has NOT changed
-        let UpdatedText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-            UpdatedText = text.trim()
-            expect(UpdatedText).not.to.equal(initialText)
+            // Click the button
+            cy.get('button[onclick="addStaff()"]').click()
+        
+            // validating the lengtth of the table
+            cy.get('tbody tr').should('have.length.gt', 0)
+        
+            // Check that the text content of the staffs info element has NOT changed
+            cy.get('div.dataTables_info#staffs_info').invoke('text').should('not.equal', '@initialText')
         })
 
-        // also make sure that the table has only 1 value now
-        cy.get('tbody')
-        .find('tr')
-        //the test fail here, when it shouldn't,
-        //because the website returns a wrong number
-        //of table rows (bug)
-        .should('have.length', 1)
-
-    })
-
-    // Test case 5: Searching for a user that doesnt exist
-    // This test case assumes that there is no user with a name "a user that doesnt exist"
-    it('search for a user that doesnt exist', () => {
-
-        const inputText = 'a user that doesnt exist';
-        // Type the input text in the search bar and press Enter
-        cy.get('input[type="search"][aria-controls="staffs"]')
-        // making sure it has no previous value
-        .clear()
-        .type(inputText)
-        // hitting enter key
-        .type('{enter}');
-    
-        let message;
-        cy.get('td.dataTables_empty').invoke('text').then((text) => {
-            message = text;
-            expect(message).to.equal('No matching records found');
-        });
-
-        // also make sure that the table has 0 values now
-        cy.get('tbody')
-        .find('tr')
-        // The website returns "No matching records found" as a row
-        .should('have.length', 1)
-    })
-
-    // Test case 6: Searching for a staff by email
-    // This test case assumes that there is a user already with an email as in the Env Variable
-    it('search for a staff by his email', () => {
-        let initialText
-        // Store the text content of the staffs info div before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+        // Test Case 3: adding an existing staff
+        // this test case Assumes that there is an existing staff with a name "cypress staff user"
+        it('add a staff that already exists (should pass)', () => {
+            let initialText
+        
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
             initialText = text.trim()
-        })
+            })
 
-        cy.get('input[type="search"][aria-controls="staffs"]')
-        // making sure it has no previous value
-        .clear()
-        .type(STAFF_EMAIL)
-        // hitting enter key
-        .type('{enter}');
-    
-        let UpdatedText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+            // Get the initial number of rows in the table
+            let initialRowCount
+            cy.get('tbody tr').then((rows) => {
+                initialRowCount = rows.length
+            })
+        
+            // Type "cypress staff user" in the input element
+            const inputText = 'cypress staff user'
+            cy.get('#new_staff')
+            // making sure it has no previous value
+            .clear()
+            .type(inputText)
+            .should('have.value', inputText)
+        
+            // Click the button
+            cy.get('button[onclick="addStaff()"]').click()
+        
+            // validating the length of the table
+            cy.get('tbody tr').should('have.length.gt', 0)
+        
+            // Check that the text content of the staffs info element has NOT changed
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
             UpdatedText = text.trim()
-            expect(UpdatedText).not.to.equal(initialText)
-        })
+            expect(UpdatedText).to.equal(initialText)
+            })
 
-        // also make sure that the table has only 1 value now
-        cy.get('tbody')
-        .find('tr')
-        .should('have.length', 1)
+            // Get the final number of rows in the table
+            let finalRowCount
+            cy.get('tbody tr').then((rows) => {
+                finalRowCount = rows.length
+            })
+
+            // Ensure that the number of rows in the table is the same before and after clicking the button
+            expect(finalRowCount).to.equal(initialRowCount)
+        }) 
+
 
     })
 
+    context('Testing search functionality scenario', () => {
+        // Test case 4: Searching for a user that exists
+        // This test case assumes there is a user called "cypress staff user" that exist 
+        it('searching for a user that exists (should fail)', () => {
+            let initialText
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
 
-    // Test case 7: Confirming deleting a user
-    // This test case assumes there is a user already exists with a name "cypress staff user" 
-    it('Confirming deleting a user', () =>{
 
-        // Get the initial number of rows in the table
-        let initialRowCount
-        cy.get('tbody tr').then((rows) => {
-            initialRowCount = rows.length
+            const inputText = 'cypress staff user';
+            // Type the input text in the search bar and press Enter
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(inputText)
+            // hitting enter key
+            .type('{enter}');
+            
+
+            // Check that the text content of the staffs info element has NOT changed
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                UpdatedText = text.trim()
+                expect(UpdatedText).not.to.equal(initialText)
+            })
+
+            // also make sure that the table has only 1 value now
+            cy.get('tbody')
+            .find('tr')
+            //the test fail here, when it shouldn't,
+            //because the website returns a wrong number
+            //of table rows (bug)
+            .should('have.length', 1)
+
         })
 
-        // click on remove user
-        cy.get('a[data-href="cypress staff user"][data-target="#confirm-delete"]').click({force: true})
-        // clicking on confirming delete user
-        cy.get('a.btn.btn-danger.btn-ok[data-href="cypress staff user"]').click()
+        // Test case 5: Searching for a user that doesnt exist
+        // This test case assumes that there is no user with a name "a user that doesnt exist"
+        it('search for a user that doesnt exist (should pass)', () => {
 
-        // Get the final number of rows in the table
-        let finalRowCount
-        cy.get('tbody tr').then((rows) => {
-            finalRowCount = rows.length
-            expect(finalRowCount).not.to.equal(initialRowCount)
+            const inputText = 'a user that doesnt exist';
+            // Type the input text in the search bar and press Enter
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(inputText)
+            // hitting enter key
+            .type('{enter}');
+
+            let message;
+            cy.get('td.dataTables_empty').invoke('text').then((text) => {
+                message = text;
+                expect(message).to.equal('No matching records found');
+            });
+
+            // also make sure that the table has 0 values now
+            cy.get('tbody')
+            .find('tr')
+            // The website returns "No matching records found" as a row
+            .should('have.length', 1)
+        })
+
+        // Test case 6: Searching for a staff by email
+        // This test case assumes that there is a user already with an email as in the Env Variable
+        it('search for a staff by his email (should pass)', () => {
+            let initialText
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
+
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(STAFF_EMAIL)
+            // hitting enter key
+            .type('{enter}');
+
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                UpdatedText = text.trim()
+                expect(UpdatedText).not.to.equal(initialText)
+            })
+
+            // also make sure that the table has only 1 value now
+            cy.get('tbody')
+            .find('tr')
+            .should('have.length', 1)
+
+        })
+
+        // Test case 7: Searching for a user with a value of ("")
+        it('searching for a user with a value of "" (should fail)', () => {
+            let initialText
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
+
+
+            const inputText = '""';
+            // Type the input text in the search bar and press Enter
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(inputText)
+            // hitting enter key
+            .type('{enter}');
+            
+
+            // Check that the text content of the staffs info element has NOT changed
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                UpdatedText = text.trim()
+                //the test fail here, when it shouldn't,
+                // because the website returns wrong restults
+                // (bug)     
+                expect(UpdatedText).not.to.equal(initialText)
+            })
+
+            // also make sure that the table has only 1 value now
+            cy.get('tbody')
+            .find('tr')
+            //the test fail here, when it shouldn't,
+            // because the website returns a wrong number of table rows (bug)
+            // the website should returns nothing
+            .should('have.length', 0)
+
+            })
+
+
+
+        // Test case 8: Searching for a staff by firstname
+        // This test case assumes that there is only one user with firstname "test_user_temp_1"
+        it('search for a staff by his firstname (should pass)', () => {
+            let initialText
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
+
+            let staff_firstname = "test_user_temp_1"
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(staff_firstname)
+            // hitting enter key
+            .type('{enter}');
+        
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                UpdatedText = text.trim()
+                expect(UpdatedText).not.to.equal(initialText)
+            })
+
+        })
+
+
+        // Test case 9: Searching for a staff by lastname
+        // This test case assumes that there is only one user with lastname "QA"
+        it('search for a staff by his lastname (should pass)', () => {
+            let initialText
+            // Store the text content of the staffs info div before clicking the button
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                initialText = text.trim()
+            })
+
+            let staff_firstname = "QA"
+            cy.get('input[type="search"][aria-controls="staffs"]')
+            // making sure it has no previous value
+            .clear()
+            .type(staff_firstname)
+            // hitting enter key
+            .type('{enter}');
+        
+            let UpdatedText
+            cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
+                UpdatedText = text.trim()
+                expect(UpdatedText).not.to.equal(initialText)
+            })
+
+            // also make sure that the table has only 1 value now
+            cy.get('tbody')
+            .find('tr')
+            .should('have.length', 1)
+
         })
     })
 
 
+    context('Testing Deleting staff functionality scenario', () => {
+        // Test case 7: Confirming deleting a user
+        // This test case assumes there is a user already exists with a name "cypress staff user" 
+        it('Confirming deleting a user (should pass)', () =>{
 
-    // Test case 8: Searching for a user with a value of ("")
-   it('searching for a user with a value of ""', () => {
-    let initialText
-    // Store the text content of the staffs info div before clicking the button
-    cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-    initialText = text.trim()
-    })
+            // Get the initial number of rows in the table
+            let initialRowCount
+            cy.get('tbody tr').then((rows) => {
+                initialRowCount = rows.length
+            })
 
+            // click on remove user
+            cy.get('a[data-href="cypress staff user"][data-target="#confirm-delete"]').click({force: true})
+            // clicking on confirming delete user
+            cy.get('a.btn.btn-danger.btn-ok[data-href="cypress staff user"]').click()
 
-    const inputText = '""';
-    // Type the input text in the search bar and press Enter
-    cy.get('input[type="search"][aria-controls="staffs"]')
-    // making sure it has no previous value
-    .clear()
-    .type(inputText)
-    // hitting enter key
-    .type('{enter}');
-    
-
-    // Check that the text content of the staffs info element has NOT changed
-    let UpdatedText
-    cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-        UpdatedText = text.trim()
-        //the test fail here, when it shouldn't,
-        // because the website returns wrong restults
-        // (bug)     
-        expect(UpdatedText).not.to.equal(initialText)
-    })
-
-    // also make sure that the table has only 1 value now
-    cy.get('tbody')
-    .find('tr')
-    //the test fail here, when it shouldn't,
-    // because the website returns a wrong number of table rows (bug)
-    // the website should returns nothing
-    .should('have.length', 0)
-
-    })
-
-
-
-    // Test case 9: Searching for a staff by firstname
-    // This test case assumes that there is only one user with firstname "test_user_temp_1"
-    it('search for a staff by his firstname', () => {
-        let initialText
-        // Store the text content of the staffs info div before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-            initialText = text.trim()
+            // Get the final number of rows in the table
+            let finalRowCount
+            cy.get('tbody tr').then((rows) => {
+                finalRowCount = rows.length
+                expect(finalRowCount).not.to.equal(initialRowCount)
+            })
         })
-
-        let staff_firstname = "test_user_temp_1"
-        cy.get('input[type="search"][aria-controls="staffs"]')
-        // making sure it has no previous value
-        .clear()
-        .type(staff_firstname)
-        // hitting enter key
-        .type('{enter}');
-    
-        let UpdatedText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-            UpdatedText = text.trim()
-            expect(UpdatedText).not.to.equal(initialText)
-        })
-
     })
 
 
-    // Test case 10: Searching for a staff by lastname
-    // This test case assumes that there is only one user with lastname "QA"
-    it('search for a staff by his lastname', () => {
-        let initialText
-        // Store the text content of the staffs info div before clicking the button
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-            initialText = text.trim()
-        })
-
-        let staff_firstname = "QA"
-        cy.get('input[type="search"][aria-controls="staffs"]')
-        // making sure it has no previous value
-        .clear()
-        .type(staff_firstname)
-        // hitting enter key
-        .type('{enter}');
-    
-        let UpdatedText
-        cy.get('div.dataTables_info#staffs_info').invoke('text').then((text) => {
-            UpdatedText = text.trim()
-            expect(UpdatedText).not.to.equal(initialText)
-        })
-
-        // also make sure that the table has only 1 value now
-        cy.get('tbody')
-        .find('tr')
-        .should('have.length', 1)
-
-    })
 })
